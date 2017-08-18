@@ -2,8 +2,7 @@
 #include "utils.h"
 
 
-// Used for SHIFT_ESC
-#define MODS_CTRL_MASK  (MOD_BIT(KC_LSHIFT)|MOD_BIT(KC_RSHIFT))
+#define MODS_SHIFT  (MOD_BIT(KC_LSHIFT)|MOD_BIT(KC_RSHIFT))
 
 // Each layer gets a name for readability, which is then used in the keymap matrix below.
 // The underscores don't mean anything - you can have a layer called STUFF or any other name.
@@ -25,7 +24,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   F(1)   , KC_LGUI, KC_LALT, KC_SPC ,                                                       F(1)   , KC_RALT, KC_RGUI, KC_RCTL),
 
 [_CT] = KEYMAP_ANSI(
-  _______, KC_F1  , KC_F2  , KC_F3  , KC_F4  , KC_F5  , KC_F6  , KC_F7  , KC_F8  , KC_F9  , KC_F10 , KC_F11 , KC_F12 , KC_DEL , \
+  KC_GRV , KC_F1  , KC_F2  , KC_F3  , KC_F4  , KC_F5  , KC_F6  , KC_F7  , KC_F8  , KC_F9  , KC_F10 , KC_F11 , KC_F12 , KC_DEL , \
   KC_CAPS, _______, KC_UP  , _______, _______, _______, _______, _______, _______, _______, _______, BL_DEC , BL_INC , BL_TOGG, \
   _______, KC_LEFT, KC_DOWN, KC_RGHT, _______, _______, _______, KC_INS , KC_HOME, KC_PGUP, _______, _______,          _______, \
   _______,          KC_VOLD, KC_MUTE, KC_VOLU, BL_DEC , BL_TOGG, BL_INC , KC_DEL , KC_END , KC_PGDN, _______,          _______, \
@@ -40,40 +39,17 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 };
 
 enum function_id {
-    SHIFT_ESC    = 0,
     SEIWA_F      = 1,
 };
 
 const uint16_t PROGMEM fn_actions[] = {
-  [SHIFT_ESC]  = ACTION_FUNCTION(SHIFT_ESC),
   [SEIWA_F] = ACTION_FUNCTION(SEIWA_F)
 };
 
 void action_function(keyrecord_t *record, uint8_t id, uint8_t opt) {
-  static uint8_t shift_esc_shift_mask;
   static bool seiwa_f_pending;
   static uint8_t prev_layer_state;
   switch (id) {
-  case SHIFT_ESC:
-    shift_esc_shift_mask = get_mods()&MODS_CTRL_MASK;
-    if (record->event.pressed) {
-      if (shift_esc_shift_mask) {
-        add_key(KC_GRV);
-        send_keyboard_report();
-      } else {
-        add_key(KC_ESC);
-        send_keyboard_report();
-      }
-    } else {
-      if (shift_esc_shift_mask) {
-        del_key(KC_GRV);
-        send_keyboard_report();
-      } else {
-        del_key(KC_ESC);
-        send_keyboard_report();
-      }
-    }
-    break;
   case SEIWA_F:
     if (record->event.pressed) {
       if (seiwa_f_pending) {
