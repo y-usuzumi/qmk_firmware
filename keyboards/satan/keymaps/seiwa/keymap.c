@@ -25,9 +25,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 [_CT] = KEYMAP_ANSI(
   _______, KC_F1  , KC_F2  , KC_F3  , KC_F4  , KC_F5  , KC_F6  , KC_F7  , KC_F8  , KC_F9  , KC_F10 , KC_F11 , KC_F12 , KC_DEL , \
   KC_CAPS, _______, KC_UP  , _______, _______, _______, _______, _______, _______, _______, _______, BL_DEC , BL_INC , BL_TOGG, \
-  _______, KC_LEFT, KC_DOWN, KC_RGHT, _______, _______, _______, KC_INS , KC_HOME, KC_PGUP, _______, _______,          TO(_ZZ), \
+  _______, KC_LEFT, KC_DOWN, KC_RGHT, _______, _______, _______, KC_INS , KC_HOME, KC_PGUP, _______, _______,          _______, \
   _______,          KC_VOLD, KC_MUTE, KC_VOLU, BL_DEC , BL_TOGG, BL_INC , KC_DEL , KC_END , KC_PGDN, _______,          _______, \
-  _______, _______, _______, _______,                                                       _______, _______, KC_APP , _______),
+  F(1)   , _______, _______, _______,                                                       F(1)   , _______, KC_APP , _______),
 
 [_ZZ] = KEYMAP_ANSI(
   _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, \
@@ -38,35 +38,43 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 };
 
 enum function_id {
-    SHIFT_ESC,
+    SHIFT_ESC    = 0,
+    SUSPENDED_F0 = 1,
 };
 
 const uint16_t PROGMEM fn_actions[] = {
-  [0]  = ACTION_FUNCTION(SHIFT_ESC),
+  [SHIFT_ESC]  = ACTION_FUNCTION(SHIFT_ESC),
+  [SUSPENDED_F0] = ACTION_FUNCTION(SUSPENDED_F0)
 };
 
 void action_function(keyrecord_t *record, uint8_t id, uint8_t opt) {
   static uint8_t shift_esc_shift_mask;
   switch (id) {
-    case SHIFT_ESC:
-      shift_esc_shift_mask = get_mods()&MODS_CTRL_MASK;
-      if (record->event.pressed) {
-        if (shift_esc_shift_mask) {
-          add_key(KC_GRV);
-          send_keyboard_report();
-        } else {
-          add_key(KC_ESC);
-          send_keyboard_report();
-        }
+  case SHIFT_ESC:
+    shift_esc_shift_mask = get_mods()&MODS_CTRL_MASK;
+    if (record->event.pressed) {
+      if (shift_esc_shift_mask) {
+        add_key(KC_GRV);
+        send_keyboard_report();
       } else {
-        if (shift_esc_shift_mask) {
-          del_key(KC_GRV);
-          send_keyboard_report();
-        } else {
-          del_key(KC_ESC);
-          send_keyboard_report();
-        }
+        add_key(KC_ESC);
+        send_keyboard_report();
       }
-      break;
+    } else {
+      if (shift_esc_shift_mask) {
+        del_key(KC_GRV);
+        send_keyboard_report();
+      } else {
+        del_key(KC_ESC);
+        send_keyboard_report();
+      }
+    }
+    break;
+  case SUSPENDED_F0:
+    if (record->event.pressed) {
+      layer_move(_ZZ);
+    } else {
+      layer_move(_BS);
+    }
   }
 }
