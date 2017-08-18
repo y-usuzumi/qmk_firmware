@@ -86,7 +86,9 @@ void action_function(keyrecord_t *record, uint8_t id, uint8_t opt) {
       }
     } else {
       seiwa_f_pending = false;
-      layer_state_set(prev_layer)
+      if (!layer_and(_ZZ)) {
+        layer_state_set(prev_layer);
+      }
     }
   }
 }
