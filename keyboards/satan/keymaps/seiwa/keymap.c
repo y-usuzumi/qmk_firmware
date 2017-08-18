@@ -1,4 +1,5 @@
 #include "satan.h"
+#include "utils.h"
 
 
 // Used for SHIFT_ESC
@@ -10,9 +11,11 @@
 // entirely and just use numbers.
 #define _BS 0   // Base layer
 #define _CT 1   // Control layer
-#define _ZZ 31  // The layer that governs them all
+#define _ZZ 2  // The layer that governs them all
 
 #define _______ KC_TRNS
+
+static uint8_t prev_layer_state;
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 [_BS] = KEYMAP_ANSI(
@@ -20,7 +23,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   KC_TAB , KC_Q   , KC_W   , KC_E   , KC_R   , KC_T   , KC_Y   , KC_U   , KC_I   , KC_O   , KC_P   , KC_LBRC, KC_RBRC, KC_BSLS, \
   KC_LCTL, KC_A   , KC_S   , KC_D   , KC_F   , KC_G   , KC_H   , KC_J   , KC_K   , KC_L   , KC_SCLN, KC_QUOT,          KC_ENT , \
   KC_LSFT,          KC_Z   , KC_X   , KC_C   , KC_V   , KC_B   , KC_N   , KC_M   , KC_COMM, KC_DOT , KC_SLSH,          KC_RSFT, \
-  TO(_CT), KC_LGUI, KC_LALT, KC_SPC ,                                                       TO(_CT), KC_RALT, KC_RGUI, KC_RCTL),
+  F(1), KC_LGUI, KC_LALT, KC_SPC ,                                                       F(1), KC_RALT, KC_RGUI, KC_RCTL),
 
 [_CT] = KEYMAP_ANSI(
   _______, KC_F1  , KC_F2  , KC_F3  , KC_F4  , KC_F5  , KC_F6  , KC_F7  , KC_F8  , KC_F9  , KC_F10 , KC_F11 , KC_F12 , KC_DEL , \
@@ -39,16 +42,17 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
 enum function_id {
     SHIFT_ESC    = 0,
-    SUSPENDED_F0 = 1,
+    SEIWA_F = 1,
 };
 
 const uint16_t PROGMEM fn_actions[] = {
   [SHIFT_ESC]  = ACTION_FUNCTION(SHIFT_ESC),
-  [SUSPENDED_F0] = ACTION_FUNCTION(SUSPENDED_F0)
+  [SEIWA_F] = ACTION_FUNCTION(SEIWA_F)
 };
 
 void action_function(keyrecord_t *record, uint8_t id, uint8_t opt) {
   static uint8_t shift_esc_shift_mask;
+  static bool seiwa_f_pending;
   switch (id) {
   case SHIFT_ESC:
     shift_esc_shift_mask = get_mods()&MODS_CTRL_MASK;
@@ -70,11 +74,19 @@ void action_function(keyrecord_t *record, uint8_t id, uint8_t opt) {
       }
     }
     break;
-  case SUSPENDED_F0:
+  case SEIWA_F:
     if (record->event.pressed) {
-      layer_move(_ZZ);
+      if (seiwa_f_pending) {
+        seiwa_f_pending = false;
+        layer_move(_ZZ);
+      } else {
+        seiwa_f_pending = true;
+        prev_layer_state = layer_state;
+        layer_on(1UL << one_layer_higher_state(layer_state) + 1);
+      }
     } else {
-      layer_move(_BS);
+      seiwa_f_pending = false;
+      layer_state_set(prev_layer)
     }
   }
 }
