@@ -4,13 +4,14 @@
 
 #define MODS_SHIFT  (MOD_BIT(KC_LSHIFT)|MOD_BIT(KC_RSHIFT))
 
-// Each layer gets a name for readability, which is then used in the keymap matrix below.
-// The underscores don't mean anything - you can have a layer called STUFF or any other name.
-// Layer names don't all need to be of the same length, obviously, and you can also skip them
-// entirely and just use numbers.
-#define _QW 0   // Base layer
-#define _CT 8   // Control layer
-#define _ZZ 31  // The layer that governs them all
+// 0 ~ 7: base layers
+// 8 ~ 29: feature layers
+// 30: debug
+// 31: layer switch center
+#define _QW 0   // Qwerty
+#define _CT 8   // Controls
+#define _DB 30  // Debugging
+#define _ZZ 31  // Layer switch
 
 #define _______ KC_TRNS
 
@@ -35,6 +36,12 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   _______, TO(0)  , TO(1)  , TO(2)  , TO(3)  , TO(4)  , TO(5)  , TO(6)  , TO(7)  , TO(8)  , TO(9)  , _______, _______, _______, \
   _______, TO(10) , TO(11) , TO(12) , TO(13) , TO(14) , TO(15) , TO(16) , TO(17) , TO(18) , TO(19) , TO(30) ,          _______, \
   _______,          TO(20) , TO(21) , TO(22) , TO(23) , TO(24) , TO(25) , TO(26) , TO(27) , TO(28) , TO(29) ,          _______, \
+  _______, _______, _______, _______,                                                       _______, _______, _______, _______),
+[_DB] = KEYMAP_ANSI(
+  _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, \
+  _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, \
+  _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,          _______, \
+  _______,          RGB_TOG, RGB_MOD, RGB_HUI, RGB_HUD, RGB_SAI, RGB_SAD, RGB_VAI, RGB_VAD, _______, _______,          _______, \
   _______, _______, _______, _______,                                                       _______, _______, _______, _______),
 };
 
