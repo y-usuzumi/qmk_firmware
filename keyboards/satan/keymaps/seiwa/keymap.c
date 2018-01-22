@@ -48,15 +48,15 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
 [_CTQWVIM] = KEYMAP_ANSI(
   KC_GRV , KC_F1  , KC_F2  , KC_F3  , KC_F4  , KC_F5  , KC_F6  , KC_F7  , KC_F8  , KC_F9  , KC_F10 , KC_F11 , KC_F12 , KC_DEL , \
-  KC_CAPS, _______, KC_UP  , _______, _______, _______, _______, KC_PSCR, KC_SLCK, KC_PAUS, _______, BL_DEC , BL_INC , BL_TOGG, \
-  _______, KC_LEFT, KC_DOWN, KC_RGHT, _______, _______, _______, KC_INS , KC_HOME, KC_PGUP, _______, _______,          _______, \
+  KC_CAPS, _______, KC_UP  , _______, KC_MRWD, KC_MSTP, KC_MFFD, KC_PSCR, KC_SLCK, KC_PAUS, _______, BL_DEC , BL_INC , BL_TOGG, \
+  _______, KC_LEFT, KC_DOWN, KC_RGHT, KC_MPRV, KC_MPLY, KC_MNXT, KC_INS , KC_HOME, KC_PGUP, _______, _______,          _______, \
   _______,          KC_VOLD, KC_MUTE, KC_VOLU, BL_DEC , BL_TOGG, BL_INC , KC_DEL , KC_END , KC_PGDN, _______,          _______, \
   _______ , _______, _______, _______,                                                      _______, _______, KC_APP , _______),
 
 [_CTQWEMACS] = KEYMAP_ANSI(
   KC_ESC , KC_F1  , KC_F2  , KC_F3  , KC_F4  , KC_F5  , KC_F6  , KC_F7  , KC_F8  , KC_F9  , KC_F10 , KC_F11 , KC_F12 , KC_DEL , \
-  KC_CAPS, _______, KC_UP  , _______, _______, _______, _______, KC_PSCR, KC_SLCK, KC_PAUS, _______, BL_DEC , BL_INC , BL_TOGG, \
-  _______, KC_LEFT, KC_DOWN, KC_RGHT, _______, _______, _______, KC_INS , KC_HOME, KC_PGUP, _______, _______,          _______, \
+  KC_CAPS, _______, KC_UP  , _______, KC_MRWD, KC_MSTP, KC_MFFD, KC_PSCR, KC_SLCK, KC_PAUS, _______, BL_DEC , BL_INC , BL_TOGG, \
+  _______, KC_LEFT, KC_DOWN, KC_RGHT, KC_MPRV, KC_MPLY, KC_MNXT, KC_INS , KC_HOME, KC_PGUP, _______, _______,          _______, \
   _______,          KC_VOLD, KC_MUTE, KC_VOLU, BL_DEC , BL_TOGG, BL_INC , KC_DEL , KC_END , KC_PGDN, _______,          _______, \
   _______ , _______, _______, _______,                                                      _______, _______, KC_APP , _______),
 
@@ -68,52 +68,62 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   _______, _______, _______, _______,                                                       _______, _______, _______, _______),
 
 [_ZZ] = KEYMAP_ANSI(
-  TG(31) , SWDF0  , SWDF1  , SWDF2  , SWDF3  , SWDF4  , SWDF5  , SWDF6  , SWDF7  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , SWLYCLR, \
+  TG(31) , SWDF0  , SWDF1  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , SWLYCLR, \
   KC_NO  , TG(0)  , TG(1)  , TG(2)  , TG(3)  , TG(4)  , TG(5)  , TG(6)  , TG(7)  , TG(8)  , TG(9)  , KC_NO  , KC_NO  , KC_NO  , \
   KC_NO  , TG(10) , TG(11) , TG(12) , TG(13) , TG(14) , TG(15) , TG(16) , TG(17) , TG(18) , TG(19) , TG(30) ,          KC_NO  , \
   KC_NO  ,          TG(20) , TG(21) , TG(22) , TG(23) , TG(24) , TG(25) , TG(26) , TG(27) , TG(28) , TG(29) ,          KC_NO  , \
-  KC_NO  , KC_NO  , KC_NO  , KC_NO  ,                                                       KC_NO  , KC_NO  , KC_NO  , KC_NO  )
+  SWF    , KC_NO  , KC_NO  , KC_NO  ,                                                       SWF    , KC_NO  , KC_NO  , KC_NO  )
 };
 
 const uint8_t swf_layer_map[] = {
-  [0]               = _CTQWVIM,
+  [0]               = _CTQWVIM,  // Not likely to hit
   [1UL << _QWVIM]   = _CTQWVIM,
   [1UL << _QWEMACS] = _CTQWEMACS
 };
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
-  static bool swf_pending;
-  static uint8_t ct_layer;
-  register bool continue_process = false;
+  static uint8_t swf_pending = 0;
   switch (keycode) {
   case SWF:
     if (record->event.pressed) {
-      if (swf_pending) {
-        layer_off(ct_layer);
-        swf_pending = false;
-        ct_layer = 0;
-        layer_on(_ZZ);
-      } else {
-        swf_pending = true;
-        ct_layer = swf_layer_map[default_layer_state];
-        layer_on(ct_layer);
-      }
+      swf_pending += 1;
     } else {
-      layer_off(ct_layer);
-      swf_pending = false;
-      ct_layer = 0;
+      swf_pending -= 1;
+      if (swf_pending < 0)
+        swf_pending = 0;
     }
-    break;
+    if (swf_pending) {
+      uint8_t ct_layer = swf_layer_map[default_layer_state];
+      layer_on(ct_layer);
+    } else {
+      uint8_t ct_layer = swf_layer_map[default_layer_state];
+      layer_off(ct_layer);
+    }
+    return false;
     // return true;  // Let QMK send the enter press/release events
   case SWLYCLR:
     layer_clear();
-    break;
+    return false;
   case SWDF0 ... SWDF7:
-    set_single_persistent_default_layer(keycode - SWDF0);
+    if (record->event.pressed) {
+      set_single_persistent_default_layer(keycode - SWDF0);
+    }
+    return false;
+  case KC_ENT:
+    if (record->event.pressed) {
+      if (swf_pending == 2) {
+        layer_on(_ZZ);
+        return false;
+      }
+    }
     break;
-  default:
-    continue_process = true;
+  case KC_RCTL:
+    if (swf_pending == 2) {
+      layer_clear();
+      default_layer_set(1UL << 0);
+      return false;
+    }
     break;
   }
-  return continue_process;
+  return true;
 }
