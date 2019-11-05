@@ -46,9 +46,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
 [_CTQWVIM] = LAYOUT_60_ansi(
   KC_GRV , KC_F1  , KC_F2  , KC_F3  , KC_F4  , KC_F5  , KC_F6  , KC_F7  , KC_F8  , KC_F9  , KC_F10 , KC_F11 , KC_F12 , KC_DEL , \
-  KC_CAPS, _______, KC_UP  , _______, KC_MRWD, KC_MSTP, KC_MFFD, KC_HOME, KC_UP  , KC_END , KC_BSPC, KC_PSCR, KC_SLCK, KC_PAUS, \
-  _______, KC_LEFT, KC_DOWN, KC_RGHT, KC_MPRV, KC_MPLY, KC_MNXT, KC_LEFT, KC_DOWN, KC_RGHT, _______, _______,          _______, \
-  _______,          KC_VOLD, KC_MUTE, KC_VOLU, BL_DEC , BL_TOGG, BL_INC , KC_PGUP, KC_DEL , KC_PGDN, KC_INS ,          _______, \
+  KC_CAPS, KC_PGUP, KC_UP  , KC_PGDN, KC_MRWD, KC_MSTP, KC_MFFD, KC_PGUP, KC_UP  , KC_PGDN, KC_BSPC, KC_PSCR, KC_SLCK, KC_PAUS, \
+  _______, KC_LEFT, KC_DOWN, KC_RGHT, KC_MPRV, KC_MPLY, KC_MNXT, KC_LEFT, KC_DOWN, KC_RGHT, KC_ENT , KC_INS ,          _______, \
+  _______,          KC_VOLD, KC_MUTE, KC_VOLU, BL_DEC , BL_TOGG, BL_INC , KC_HOME, KC_DEL , KC_END , KC_BSLS,          _______, \
   _______ , _______, _______, _______,                                                      _______, _______, KC_APP , _______),
 
 [_QWEMACS] = LAYOUT_60_ansi(
@@ -60,9 +60,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
 [_CTQWEMACS] = LAYOUT_60_ansi(
   KC_ESC , KC_F1  , KC_F2  , KC_F3  , KC_F4  , KC_F5  , KC_F6  , KC_F7  , KC_F8  , KC_F9  , KC_F10 , KC_F11 , KC_F12 , KC_DEL , \
-  KC_CAPS, _______, KC_UP  , _______, KC_MRWD, KC_MSTP, KC_MFFD, KC_HOME, KC_UP  , KC_END , KC_BSPC, KC_PSCR, KC_SLCK, KC_PAUS, \
-  _______, KC_LEFT, KC_DOWN, KC_RGHT, KC_MPRV, KC_MPLY, KC_MNXT, KC_LEFT, KC_DOWN, KC_RGHT, _______, _______,          _______, \
-  _______,          KC_VOLD, KC_MUTE, KC_VOLU, BL_DEC , BL_TOGG, BL_INC , KC_PGUP, KC_DEL , KC_PGDN, KC_INS ,          _______, \
+  KC_CAPS, KC_PGUP, KC_UP  , KC_PGDN, KC_MRWD, KC_MSTP, KC_MFFD, KC_PGUP, KC_UP  , KC_PGDN, KC_BSPC, KC_PSCR, KC_SLCK, KC_PAUS, \
+  _______, KC_LEFT, KC_DOWN, KC_RGHT, KC_MPRV, KC_MPLY, KC_MNXT, KC_LEFT, KC_DOWN, KC_RGHT, KC_ENT , KC_INS ,          _______, \
+  _______,          KC_VOLD, KC_MUTE, KC_VOLU, BL_DEC , BL_TOGG, BL_INC , KC_HOME, KC_DEL , KC_END , KC_BSLS,          _______, \
   _______ , _______, _______, _______,                                                      _______, _______, KC_APP , _______),
 
 // The layer that does nothing (idle mode)
