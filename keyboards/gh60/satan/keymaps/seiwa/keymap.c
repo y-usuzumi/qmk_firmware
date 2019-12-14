@@ -45,7 +45,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   KC_CAPS, KC_PGUP, KC_UP  , KC_PGDN, KC_MRWD, KC_MSTP, KC_MFFD, KC_PGUP, KC_UP  , KC_PGDN, KC_BSPC, KC_PSCR, KC_SLCK, KC_PAUS, \
   _______, KC_LEFT, KC_DOWN, KC_RGHT, KC_MPRV, KC_MPLY, KC_MNXT, KC_LEFT, KC_DOWN, KC_RGHT, KC_ENT , KC_INS ,          SW_ENT , \
   _______,          KC_VOLD, KC_MUTE, KC_VOLU, BL_DEC , BL_TOGG, BL_INC , KC_HOME, KC_DEL , KC_END , KC_BSLS,          _______, \
-  _______, _______, _______, SW_NUMP,                                              _______, _______, KC_APP , _______),
+  _______, _______, _______, SW_NUMP,                                                       _______, _______, KC_APP , _______),
 
 [_NUMP_QW_VIM] = LAYOUT_60_ansi(
   SW_ENT , _______, _______, _______, _______, _______, KC_NLCK, KC_P7  , KC_P8  , KC_P9,   _______, _______, _______, _______, \
@@ -66,7 +66,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   KC_CAPS, KC_PGUP, KC_UP  , KC_PGDN, KC_MRWD, KC_MSTP, KC_MFFD, KC_PGUP, KC_UP  , KC_PGDN, KC_BSPC, KC_PSCR, KC_SLCK, KC_PAUS, \
   _______, KC_LEFT, KC_DOWN, KC_RGHT, KC_MPRV, KC_MPLY, KC_MNXT, KC_LEFT, KC_DOWN, KC_RGHT, KC_ENT , KC_INS ,          SW_ENT , \
   _______,          KC_VOLD, KC_MUTE, KC_VOLU, BL_DEC , BL_TOGG, BL_INC , KC_HOME, KC_DEL , KC_END , KC_BSLS,          _______, \
-  _______, _______, _______, SW_NUMP,                                              _______, _______, KC_APP , _______),
+  _______, _______, _______, SW_NUMP,                                                       _______, _______, KC_APP , _______),
 
 [_NUMP_QW_EMACS] = LAYOUT_60_ansi(
   SW_ENT , _______, _______, _______, _______, _______, KC_NLCK, KC_P7  , KC_P8  , KC_P9,   _______, _______, _______, _______, \
