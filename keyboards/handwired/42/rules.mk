@@ -1,7 +1,7 @@
 # MCU name
 MCU = atmega32u4
 
-# Processor frequency.
+# Processor frequency
 F_CPU = 8000000
 
 # Bootloader selection
@@ -31,7 +31,6 @@ RGBLIGHT_ENABLE = no        # Enable keyboard RGB underglow
 MIDI_ENABLE = no            # MIDI support
 AUDIO_ENABLE = no           # Audio output on port C6
 FAUXCLICKY_ENABLE = no      # Use buzzer to emulate clicky switches
-HD44780_ENABLE = no         # Enable support for HD44780 based LCDs
 
 UNICODE_ENABLE = no         # Unicode
 UNICODEMAP_ENABLE = no      # ^^
