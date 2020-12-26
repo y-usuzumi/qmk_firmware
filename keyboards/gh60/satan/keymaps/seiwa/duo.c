@@ -405,6 +405,3 @@ void swduo_flush_right() {
     }
     memset(swduo_right_pressed_keys, 0, sizeof(swduo_right_pressed_keys));
 }
-
-#undef LOFFSET
-#undef ROFFSET
