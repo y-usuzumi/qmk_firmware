@@ -20,6 +20,15 @@ enum my_keycodes {
     SW_DF5,
     SW_DF6,
     SW_DF7,
+    // Dvorak Modified
+    SWDM_LOWER_BOUND,
+    SWDM_LCTL,
+    SWDM_LALT,
+    SWDM_LGUI,
+    SWDM_RCTL,
+    SWDM_RALT,
+    SWDM_RGUI,
+    SWDM_UPPER_BOUND,
     // Duo left hand
     SWDUO_LEFT_LOWER_BOUND,
     SWDUO_Q,

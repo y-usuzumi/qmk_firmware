@@ -1,25 +1,13 @@
 #include QMK_KEYBOARD_H
+#include "layers.h"
 #include "keycodes.h"
+#include "dvrkmod.h"
 #include "duo.h"
 
 #define GRAVE_ESC_ENABLE 1
 
 #define MODS_SHIFT  (MOD_BIT(KC_LSHIFT)|MOD_BIT(KC_RSHIFT))
 #define DEFAULT_LAYER_IS(a) (default_layer_state == 1UL << a)
-
-// NOTE: All these consts must be continuous numbers or it will BRICK the keyboard
-#define _QWTY          0   // Qwerty Vim
-#define _CTL_QWTY      1   // Controls
-#define _NUMP_QWTY     2   // Numpad
-#define _DVRK          3   // Dvorak Emacs
-#define _CTL_DVRK      4   // Controls
-#define _NUMP_DVRK     5   // Numpad
-#define _DUO           6   // Duo
-#define _CTL_DUO       7   // Controls
-#define _NUMP_DUO      8   // Numpad
-#define _IDLE          9   // Idle layer. Must switch to other layers first
-#define _CTL_IDLE      10  // Controls
-#define _ZZ            11  // Layer switch
 
 typedef union {
     uint32_t raw;
@@ -32,26 +20,6 @@ typedef union {
 
 user_config_t user_config;
 
-const uint8_t sw_default_layer_map[] = {
-    [0] = _IDLE,
-    [1] = _QWTY,
-    [2] = _DVRK,
-    [3] = _DUO,
-};
-
-const uint8_t sw_f_map[] = {
-    [0]   = _CTL_QWTY,
-    [1]   = _CTL_QWTY,
-    [2]   = _CTL_DVRK,
-    [3]   = _CTL_DUO,
-};
-
-const uint8_t sw_nump_map[] = {
-    [0]   = _NUMP_QWTY,  // Not likely to hit
-    [1]   = _NUMP_QWTY,
-    [2]   = _NUMP_DVRK,
-    [3]   = _NUMP_DUO,
-};
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 // Qwerty
@@ -62,40 +30,28 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   KC_LSFT,          KC_Z   , KC_X   , KC_C   , KC_V   , KC_B   , KC_N   , KC_M   , KC_COMM, KC_DOT , KC_SLSH,          KC_RSFT, \
   SWF    , KC_LGUI, KC_LALT, KC_SPC ,                                                       SWF    , KC_RALT, KC_RGUI, KC_RCTL),
 
-[_CTL_QWTY] = LAYOUT_60_ansi(
-  SW_SESC, KC_F1  , KC_F2  , KC_F3  , KC_F4  , KC_F5  , KC_F6  , KC_F7  , KC_F8  , KC_F9  , KC_F10 , KC_F11 , KC_F12 , KC_DEL , \
-  KC_CAPS, KC_PGUP, KC_UP  , KC_PGDN, KC_MRWD, KC_MSTP, KC_MFFD, KC_PGUP, KC_UP  , KC_PGDN, KC_BSPC, KC_PSCR, KC_SLCK, KC_PAUS, \
-  _______, KC_LEFT, KC_DOWN, KC_RGHT, KC_MPRV, KC_MPLY, KC_MNXT, KC_LEFT, KC_DOWN, KC_RGHT, KC_ENT , KC_INS ,          SW_ENT , \
-  _______,          KC_VOLD, KC_MUTE, KC_VOLU, BL_DEC , BL_TOGG, BL_INC , KC_HOME, KC_DEL , KC_END , KC_BSLS,          _______, \
-  _______, _______, _______, SW_NUMP,                                                       _______, _______, KC_APP , _______),
-
-[_NUMP_QWTY] = LAYOUT_60_ansi(
-  SW_ENT , _______, _______, _______, _______, _______, KC_NLCK, KC_P7  , KC_P8  , KC_P9  , _______, _______, _______, KC_BSPC, \
-  _______, _______, _______, _______, _______, _______, KC_PAST, KC_P4  , KC_P5  , KC_P6  , KC_BSPC, _______, _______, _______, \
-  _______, _______, _______, _______, _______, _______, KC_PMNS, KC_P1  , KC_P2  , KC_P3  , KC_PENT, _______,          SW_ENT , \
-  _______,          _______, _______, _______, _______, _______, KC_PPLS, KC_P0  , KC_DEL , KC_PDOT, KC_PSLS,          _______, \
-  _______, _______, _______, _______,                                                       _______, _______, _______, _______),
-
 // Dvorak
 [_DVRK] = LAYOUT_60_ansi(
   SW_ESC , KC_1   , KC_2   , KC_3   , KC_4   , KC_5   , KC_6   , KC_7   , KC_8   , KC_9   , KC_0   , KC_LBRC, KC_RBRC, KC_BSPC, \
   KC_TAB , KC_QUOT, KC_COMM, KC_DOT , KC_P   , KC_Y   , KC_F   , KC_G   , KC_C   , KC_R   , KC_L   , KC_SLSH, KC_EQL , KC_BSLS, \
   KC_LCTL, KC_A   , KC_O   , KC_E   , KC_U   , KC_I   , KC_D   , KC_H   , KC_T   , KC_N   , KC_S   , KC_MINS,          KC_ENT , \
-  KC_LSFT,          KC_SCLN, KC_Q   , KC_J   , KC_K   , KC_X   , KC_B    , KC_M   , KC_W   , KC_V   , KC_Z  ,          KC_RSFT, \
+  KC_LSFT,          KC_SCLN, KC_Q   , KC_J   , KC_K   , KC_X   , KC_B   , KC_M   , KC_W   , KC_V   , KC_Z   ,          KC_RSFT, \
   SWF    , KC_LGUI, KC_LALT, KC_SPC ,                                                       SWF    , KC_RALT, KC_RGUI, KC_RCTL),
 
-[_CTL_DVRK] = LAYOUT_60_ansi(
-  SW_SESC, KC_F1  , KC_F2  , KC_F3  , KC_F4  , KC_F5  , KC_F6  , KC_F7  , KC_F8  , KC_F9  , KC_F10 , KC_F11 , KC_F12 , KC_DEL , \
-  KC_CAPS, KC_PGUP, KC_UP  , KC_PGDN, KC_MRWD, KC_MSTP, KC_MFFD, KC_PGUP, KC_UP  , KC_PGDN, KC_BSPC, KC_PSCR, KC_SLCK, KC_PAUS, \
-  _______, KC_LEFT, KC_DOWN, KC_RGHT, KC_MPRV, KC_MPLY, KC_MNXT, KC_LEFT, KC_DOWN, KC_RGHT, KC_ENT , KC_INS ,          SW_ENT , \
-  _______,          KC_VOLD, KC_MUTE, KC_VOLU, BL_DEC , BL_TOGG, BL_INC , KC_HOME, KC_DEL , KC_END , KC_BSLS,          _______, \
-  _______, _______, _______, SW_NUMP,                                                       _______, _______, KC_APP , _______),
+// Dvorak Modified
+[_DVRKMOD] = LAYOUT_60_ansi(
+  SW_ESC   , KC_1     , KC_2     , KC_3   , KC_4   , KC_5   , KC_6   , KC_7   , KC_8   , KC_9   , KC_0   , KC_LBRC  , KC_RBRC  , KC_BSPC  , \
+  KC_TAB   , KC_QUOT  , KC_COMM  , KC_DOT , KC_P   , KC_Y   , KC_F   , KC_G   , KC_C   , KC_R   , KC_L   , KC_SLSH  , KC_EQL   , KC_BSLS  , \
+  SWDM_LCTL, KC_A     , KC_O     , KC_E   , KC_U   , KC_I   , KC_D   , KC_H   , KC_T   , KC_N   , KC_S   , KC_MINS  ,            KC_ENT   , \
+  KC_LSFT  ,            KC_SCLN  , KC_Q   , KC_J   , KC_K   , KC_X   , KC_B   , KC_M   , KC_W   , KC_V   , KC_Z     ,            KC_RSFT  , \
+  SWF      , SWDM_LGUI, SWDM_LALT, KC_SPC ,                                                       SWF    , SWDM_RALT, SWDM_RGUI, SWDM_RCTL),
 
-[_NUMP_DVRK] = LAYOUT_60_ansi(
-  SW_ENT , _______, _______, _______, _______, _______, KC_NLCK, KC_P7  , KC_P8  , KC_P9  , _______, _______, _______, KC_BSPC, \
-  _______, _______, _______, _______, _______, _______, KC_PAST, KC_P4  , KC_P5  , KC_P6  , KC_BSPC, _______, _______, _______, \
-  _______, _______, _______, _______, _______, _______, KC_PMNS, KC_P1  , KC_P2  , KC_P3  , KC_PENT, _______,          SW_ENT , \
-  _______,          _______, _______, _______, _______, _______, KC_PPLS, KC_P0  , KC_DEL , KC_PDOT, KC_PSLS,          _______, \
+// Dvorak Modified mod layer
+[_DVRKMOD_MOD] = LAYOUT_60_ansi(
+  _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, KC_MINS, KC_EQL , _______, \
+  _______, KC_Q   , KC_W   , KC_E   , KC_R   , KC_T   , KC_Y   , KC_U   , KC_I   , KC_O   , KC_P   , KC_LBRC, KC_RBRC, _______, \
+  _______, KC_A   , KC_S   , KC_D   , KC_F   , KC_G   , KC_H   , KC_J   , KC_K   , KC_L   , KC_SCLN, KC_QUOT,          _______, \
+  _______,          KC_Z   , KC_X   , KC_C   , KC_V   , KC_B   , KC_N   , KC_M   , KC_COMM, KC_DOT , KC_SLSH,          _______, \
   _______, _______, _______, _______,                                                       _______, _______, _______, _______),
 
 // Duo
@@ -106,41 +62,48 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   KC_LSFT,          SWDUO_Z, SWDUO_X, SWDUO_C, SWDUO_V, SWDUO_B, SWDUO_N, SWDUO_M, SWDUO_COMM, SWDUO_DOT, SWDUO_SLSH,  KC_RSFT, \
   SWF    , KC_LGUI, KC_LALT, SWDUO_SPC ,                                                    SWF    , KC_RALT, KC_RGUI, KC_RCTL),
 
-[_CTL_DUO] = LAYOUT_60_ansi(
+// The layer that does nothing (idle mode)
+[_IDLE] = LAYOUT_60_ansi(
+  XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, \
+  XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, \
+  XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,          XXXXXXX, \
+  XXXXXXX,          XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,          XXXXXXX, \
+  SWF    , XXXXXXX, XXXXXXX, XXXXXXX,                                                       SWF    , XXXXXXX, XXXXXXX, XXXXXXX),
+
+[_CTL_IDLE] = LAYOUT_60_ansi(
+  _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, \
+  _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, \
+  _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,          _______, \
+  _______,          _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,          _______, \
+  _______, _______, _______, _______,                                                       _______, _______, _______, _______),
+
+[_CTL] = LAYOUT_60_ansi(
   SW_SESC, KC_F1  , KC_F2  , KC_F3  , KC_F4  , KC_F5  , KC_F6  , KC_F7  , KC_F8  , KC_F9  , KC_F10 , KC_F11 , KC_F12 , KC_DEL , \
   KC_CAPS, KC_PGUP, KC_UP  , KC_PGDN, KC_MRWD, KC_MSTP, KC_MFFD, KC_PGUP, KC_UP  , KC_PGDN, KC_BSPC, KC_PSCR, KC_SLCK, KC_PAUS, \
-  _______, KC_LEFT, KC_DOWN, KC_RGHT, KC_MPRV, KC_MPLY, KC_MNXT, KC_LEFT, KC_DOWN, KC_RGHT, KC_ENT , KC_INS ,          SW_ENT , \
+  _______, KC_LEFT, KC_DOWN, KC_RGHT, KC_MPRV, KC_MPLY, KC_MNXT, KC_LEFT, KC_DOWN, KC_RGHT, KC_ENT , KC_INS ,          KC_ENT , \
   _______,          KC_VOLD, KC_MUTE, KC_VOLU, BL_DEC , BL_TOGG, BL_INC , KC_HOME, KC_DEL , KC_END , KC_BSLS,          _______, \
   _______, _______, _______, SW_NUMP,                                                       _______, _______, KC_APP , _______),
 
-[_NUMP_DUO] = LAYOUT_60_ansi(
-  SW_ENT , _______, _______, _______, _______, _______, KC_NLCK, KC_P7  , KC_P8  , KC_P9  , _______, _______, _______, KC_BSPC, \
-  _______, _______, _______, _______, _______, _______, KC_PAST, KC_P4  , KC_P5  , KC_P6  , KC_BSPC, _______, _______, _______, \
-  _______, _______, _______, _______, _______, _______, KC_PMNS, KC_P1  , KC_P2  , KC_P3  , KC_PENT, _______,          SW_ENT , \
-  _______,          _______, _______, _______, _______, _______, KC_PPLS, KC_P0  , KC_DEL , KC_PDOT, KC_PSLS,          _______, \
-  _______, _______, _______, _______,                                                       _______, _______, _______, _______),
-
-// The layer that does nothing (idle mode)
-[_IDLE] = LAYOUT_60_ansi(
-  KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , \
-  KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , \
-  KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  ,          KC_NO  , \
-  KC_NO  ,          KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  ,          KC_NO  , \
-  SWF    , KC_NO  , KC_NO  , KC_NO  ,                                                       SWF    , KC_NO  , KC_NO  , KC_NO  ),
-
-[_CTL_IDLE] = LAYOUT_60_ansi(
+[_CTL2] = LAYOUT_60_ansi(
   _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, \
   _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, \
   _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,          SW_ENT , \
   _______,          _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,          _______, \
   _______, _______, _______, _______,                                                       _______, _______, _______, _______),
 
+[_NUMP] = LAYOUT_60_ansi(
+  SW_ENT , XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, KC_NLCK, KC_P7  , KC_P8  , KC_P9  , XXXXXXX, XXXXXXX, XXXXXXX, KC_BSPC, \
+  XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, KC_PAST, KC_P4  , KC_P5  , KC_P6  , KC_BSPC, XXXXXXX, XXXXXXX, XXXXXXX, \
+  XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, KC_PMNS, KC_P1  , KC_P2  , KC_P3  , KC_PENT, XXXXXXX,          SW_ENT , \
+  XXXXXXX,          XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, KC_PPLS, KC_P0  , KC_DEL , KC_PDOT, KC_PSLS,          XXXXXXX, \
+  _______, XXXXXXX, XXXXXXX, _______,                                                       _______, XXXXXXX, XXXXXXX, XXXXXXX),
+
 [_ZZ] = LAYOUT_60_ansi(
-  TG(_ZZ), SW_DF1 , SW_DF2 , SW_DF3 , SW_DF4 , SW_DF5 , SW_DF6 , SW_DF7 , KC_NO  , KC_NO  , SW_DF0 , KC_NO  , KC_NO  , RESET, \
-  KC_NO  , SW_TGEMACS, _______, _______, _______, _______, _______, _______, _______, _______, _______, KC_NO  , KC_NO  , KC_NO  , \
-  KC_NO  , _______, SW_SAVE, _______, _______, _______, _______, _______, _______, _______, _______, _______,          KC_NO  , \
-  KC_NO  ,          _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,          KC_NO  , \
-  SWF    , KC_NO  , KC_NO  , SW_LYCLR,                                                      SWF    , KC_NO  , KC_NO  , KC_NO  )
+  TG(_ZZ), SW_DF1    , SW_DF2 , SW_DF3 , SW_DF4 , SW_DF5 , SW_DF6 , SW_DF7 , XXXXXXX, XXXXXXX, SW_DF0 , XXXXXXX, XXXXXXX, RESET  , \
+  XXXXXXX, SW_TGEMACS, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, \
+  XXXXXXX, XXXXXXX   , SW_SAVE, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,          XXXXXXX, \
+  XXXXXXX,             XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,          XXXXXXX, \
+  _______, _______, _______, SW_LYCLR,                                                      _______, _______, _______, _______)
 };
 
 void save_user_config(void) {
@@ -168,27 +131,46 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     static uint8_t swf_pending = 0;
     // Is the SW_NUMP key pressed down
     static uint8_t sw_nump_toggle = 0;
-    // Duo left, number of pressed keys simultaneously
-    // Duo right, number of pressed keys simultaneously
+    uint8_t ctl_layer;
+    uint8_t ctl2_layer;
     switch (keycode) {
     case SWF:
         if (record->event.pressed) {
-            swf_pending += 1;
+            swf_pending++;
+            if (swf_pending > 2) {
+                // Safeguard
+                swf_pending = 2;
+            }
+            switch (swf_pending) {
+            case 1:
+                ctl_layer = sw_ctl_map[user_config.default_layer];
+                layer_on(ctl_layer);
+                break;
+            case 2:
+                ctl2_layer = sw_ctl2_map[user_config.default_layer];
+                layer_on(ctl2_layer);
+                break;
+            default:
+                break;
+            }
         } else {
-            swf_pending -= 1;
+            swf_pending--;
             if (swf_pending < 0) {
                 // Safeguard
                 swf_pending = 0;
             }
-        }
-        if (swf_pending) {
-            // Any number of SWF keys pressed, toggle on CTL layer.
-            uint8_t ct_layer = sw_f_map[user_config.default_layer];
-            layer_on(ct_layer);
-        } else {
-            // On release, toggle off CTL layer.
-            uint8_t ct_layer = sw_f_map[user_config.default_layer];
-            layer_off(ct_layer);
+            switch (swf_pending) {
+            case 0:
+                ctl_layer = sw_ctl_map[user_config.default_layer];
+                layer_off(ctl_layer);
+                break;
+            case 1:
+                ctl2_layer = sw_ctl2_map[user_config.default_layer];
+                layer_off(ctl2_layer);
+                break;
+            default:
+                break;
+            }
         }
         return false;
         // return true;  // Let QMK send the enter press/release events
@@ -289,6 +271,8 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             return false;
         }
         return true;
+    case SWDM_LOWER_BOUND ... SWDM_UPPER_BOUND:
+        return swdvrkmod_process(keycode, record);
     case SWDUO_LEFT_LOWER_BOUND ... SWDUO_LEFT_UPPER_BOUND:  // Duo left hand keycodes
         return swduo_process_left(keycode, record);
     case SWDUO_RIGHT_LOWER_BOUND ... SWDUO_RIGHT_UPPER_BOUND:  // Duo right hand keycodes

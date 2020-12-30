@@ -1,4 +1,5 @@
 #include "duo.h"
+#include "utils.h"
 
 void swduo_flush_left(void);
 void swduo_flush_right(void);
@@ -13,12 +14,6 @@ static inline uint16_t swduo_right_keycode_offset(uint16_t keycode) {
 
 static uint16_t swduo_left_pressed_keys[2];
 static uint16_t swduo_right_pressed_keys[2];
-
-void send_key(uint16_t keycode) {
-    register_code16(keycode);
-    wait_ms(1);
-    unregister_code(keycode);
-}
 
 bool swduo_process_left(uint16_t keycode, keyrecord_t *record) {
     static uint8_t keys_pressed = 0;

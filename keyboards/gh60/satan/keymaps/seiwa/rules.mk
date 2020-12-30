@@ -1,4 +1,4 @@
-SRC += duo.c
+SRC += layers.c utils.c duo.c dvrkmod.c
 
 # Build Options
 #   change to "no" to disable the options, or define them in the Makefile in
