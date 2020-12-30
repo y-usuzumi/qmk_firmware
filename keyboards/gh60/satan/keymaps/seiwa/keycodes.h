@@ -5,6 +5,7 @@
 // Custom keycodes
 enum my_keycodes {
     SWF                = SAFE_RANGE,  // Seiwa Fn key
+    SW_FLIP,  // Flip the current default layer with the last used (if any) default layer
     SW_ENT,  // Seiwa Enter key
     SW_NUMP,  // temporarily switch to the numpad layer of the base layer
     SW_LYCLR,  // clear all layers

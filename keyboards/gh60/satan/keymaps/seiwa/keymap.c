@@ -1,5 +1,7 @@
 #include QMK_KEYBOARD_H
+#include "userconfig.h"
 #include "layers.h"
+#include "utils.h"
 #include "keycodes.h"
 #include "dvrkmod.h"
 #include "duo.h"
@@ -8,18 +10,6 @@
 
 #define MODS_SHIFT  (MOD_BIT(KC_LSHIFT)|MOD_BIT(KC_RSHIFT))
 #define DEFAULT_LAYER_IS(a) (default_layer_state == 1UL << a)
-
-typedef union {
-    uint32_t raw;
-    struct {
-        bool initialized :1;
-        bool emacs_mode :1;
-        uint8_t default_layer :4;
-    };
-} user_config_t;
-
-user_config_t user_config;
-
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 // Qwerty
@@ -80,7 +70,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 [_CTL] = LAYOUT_60_ansi(
   SW_SESC, KC_F1  , KC_F2  , KC_F3  , KC_F4  , KC_F5  , KC_F6  , KC_F7  , KC_F8  , KC_F9  , KC_F10 , KC_F11 , KC_F12 , KC_DEL , \
   KC_CAPS, KC_PGUP, KC_UP  , KC_PGDN, KC_MRWD, KC_MSTP, KC_MFFD, KC_PGUP, KC_UP  , KC_PGDN, KC_BSPC, KC_PSCR, KC_SLCK, KC_PAUS, \
-  _______, KC_LEFT, KC_DOWN, KC_RGHT, KC_MPRV, KC_MPLY, KC_MNXT, KC_LEFT, KC_DOWN, KC_RGHT, KC_ENT , KC_INS ,          KC_ENT , \
+  _______, KC_LEFT, KC_DOWN, KC_RGHT, KC_MPRV, KC_MPLY, KC_MNXT, KC_LEFT, KC_DOWN, KC_RGHT, KC_ENT , KC_INS ,          SW_FLIP, \
   _______,          KC_VOLD, KC_MUTE, KC_VOLU, BL_DEC , BL_TOGG, BL_INC , KC_HOME, KC_DEL , KC_END , KC_BSLS,          _______, \
   _______, _______, _______, SW_NUMP,                                                       _______, _______, KC_APP , _______),
 
@@ -99,27 +89,20 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   _______, XXXXXXX, XXXXXXX, _______,                                                       _______, XXXXXXX, XXXXXXX, XXXXXXX),
 
 [_ZZ] = LAYOUT_60_ansi(
-  TG(_ZZ), SW_DF1    , SW_DF2 , SW_DF3 , SW_DF4 , SW_DF5 , SW_DF6 , SW_DF7 , XXXXXXX, XXXXXXX, SW_DF0 , XXXXXXX, XXXXXXX, RESET  , \
+  TG(_ZZ), SW_DF1    , SW_DF2 , SW_DF3 , SW_DF4 , SW_DF5 , SW_DF6 , SW_DF7 , XXXXXXX, XXXXXXX, SW_DF0 , XXXXXXX, XXXXXXX, EEP_RST, \
   XXXXXXX, SW_TGEMACS, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, \
   XXXXXXX, XXXXXXX   , SW_SAVE, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,          XXXXXXX, \
   XXXXXXX,             XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,          XXXXXXX, \
   _______, _______, _______, SW_LYCLR,                                                      _______, _______, _______, _______)
 };
 
-void save_user_config(void) {
-    eeconfig_update_user(user_config.raw);
-}
-
-void load_user_config(void) {
-    // Read user config from EEPROM
-    user_config.raw = eeconfig_read_user();
-    if (!user_config.initialized) {
-        user_config.initialized = true;
-        user_config.emacs_mode = 0;
-        user_config.default_layer = 1;
-        save_user_config();
-    }
-    default_layer_set(1UL << sw_default_layer_map[user_config.default_layer]);
+void eeconfig_init_user(void) {
+    user_config.initialized = true;
+    user_config.emacs_mode = 0;
+    user_config.default_layer = 1;
+    user_config.last_default_layer = DEFAULT_LAYER_MAX;
+    save_user_config();
+    load_user_config();
 }
 
 void keyboard_post_init_user(void) {
@@ -228,8 +211,12 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         return false;
     case SW_DF0 ... SW_DF7:
         if (record->event.pressed) {
-            user_config.default_layer = keycode - SW_DF0;
-            default_layer_set(1UL << sw_default_layer_map[user_config.default_layer]);
+            push_default_layer(keycode - SW_DF0);
+        }
+        return false;
+    case SW_FLIP:
+        if (record->event.pressed) {
+            flip_last_default_layer();
         }
         return false;
     case SW_ENT:
