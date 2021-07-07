@@ -1,4 +1,5 @@
 #include QMK_KEYBOARD_H
+#include "raw_hid.h"
 #include "userconfig.h"
 #include "layers.h"
 #include "utils.h"
@@ -52,6 +53,15 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   KC_LSFT,          SWDUO_Z, SWDUO_X, SWDUO_C, SWDUO_V, SWDUO_B, SWDUO_N, SWDUO_M, SWDUO_COMM, SWDUO_DOT, SWDUO_SLSH,  KC_RSFT, \
   SWF    , KC_LGUI, KC_LALT, SWDUO_SPC ,                                                    SWF    , KC_RALT, KC_RGUI, KC_RCTL),
 
+// Arrow keys
+[_ARROW] = LAYOUT_60_ansi(
+  SW_ESC , KC_1   , KC_2   , KC_3   , KC_4   , KC_5   , KC_6   , KC_7   , KC_8   , KC_9   , KC_0   , KC_MINS, KC_EQL , KC_BSPC, \
+  KC_TAB , KC_Q   , KC_W   , KC_E   , KC_R   , KC_T   , KC_Y   , KC_U   , KC_I   , KC_O   , KC_P   , KC_LBRC, KC_RBRC, KC_BSLS, \
+  KC_LCTL, KC_A   , KC_S   , KC_D   , KC_F   , KC_G   , KC_H   , KC_J   , KC_K   , KC_L   , KC_SCLN, KC_QUOT,          KC_ENT , \
+  KC_LSFT,          KC_Z   , KC_X   , KC_C   , KC_V   , KC_B   , KC_N   , KC_M   , KC_COMM, KC_DOT , KC_SLSH,          KC_UP  , \
+  SWF    , KC_LGUI, KC_LALT, KC_SPC ,                                                       SWF    , KC_LEFT, KC_DOWN, KC_RGHT),
+
+
 // The layer that does nothing (idle mode)
 [_IDLE] = LAYOUT_60_ansi(
   XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, \
@@ -70,16 +80,16 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 [_CTL] = LAYOUT_60_ansi(
   SW_SESC, KC_F1  , KC_F2  , KC_F3  , KC_F4  , KC_F5  , KC_F6  , KC_F7  , KC_F8  , KC_F9  , KC_F10 , KC_F11 , KC_F12 , KC_DEL , \
   KC_CAPS, KC_PGUP, KC_UP  , KC_PGDN, KC_MRWD, KC_MSTP, KC_MFFD, KC_PGUP, KC_UP  , KC_PGDN, KC_BSPC, KC_PSCR, KC_SLCK, KC_PAUS, \
-  _______, KC_LEFT, KC_DOWN, KC_RGHT, KC_MPRV, KC_MPLY, KC_MNXT, KC_LEFT, KC_DOWN, KC_RGHT, KC_ENT , KC_INS ,          SW_FLIP, \
-  _______,          KC_VOLD, KC_MUTE, KC_VOLU, BL_DEC , BL_TOGG, BL_INC , KC_HOME, KC_DEL , KC_END , KC_BSLS,          _______, \
+  _______, KC_LEFT, KC_DOWN, KC_RGHT, KC_MPRV, KC_MPLY, KC_MNXT, KC_LEFT, KC_DOWN, KC_RGHT, KC_ENT , KC_INS ,          _______ , \
+  _______,          KC_VOLD, KC_MUTE, KC_VOLU, SW_NUMP, _______, _______, KC_HOME, KC_DEL , KC_END , KC_BSLS,          _______, \
   _______, _______, _______, SW_NUMP,                                                       _______, _______, KC_APP , _______),
 
 [_CTL2] = LAYOUT_60_ansi(
-  _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, \
+  _______, SW_CMD1, SW_CMD2, SW_CMD3, SW_CMD4, SW_CMD5, SW_CMD6, SW_CMD7, SW_CMD8, SW_CMD9, SW_CMD0, _______, _______, _______, \
   _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, \
   _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,          SW_ENT , \
-  _______,          _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,          _______, \
-  _______, _______, _______, _______,                                                       _______, _______, _______, _______),
+  _______,          _______, _______, _______, BL_DEC , BL_TOGG, BL_INC , BL_BRTG, _______, _______, _______,          _______, \
+  _______, _______, _______, SW_FLIP,                                                       _______, _______, _______, _______),
 
 [_NUMP] = LAYOUT_60_ansi(
   SW_ENT , XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, KC_NLCK, KC_P7  , KC_P8  , KC_P9  , XXXXXXX, XXXXXXX, XXXXXXX, KC_BSPC, \
@@ -89,12 +99,31 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   _______, XXXXXXX, XXXXXXX, _______,                                                       _______, XXXXXXX, XXXXXXX, XXXXXXX),
 
 [_ZZ] = LAYOUT_60_ansi(
-  TG(_ZZ), SW_DF1    , SW_DF2 , SW_DF3 , SW_DF4 , SW_DF5 , SW_DF6 , SW_DF7 , XXXXXXX, XXXXXXX, SW_DF0 , XXXXXXX, XXXXXXX, EEP_RST, \
-  XXXXXXX, SW_TGEMACS, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, \
+  SW_EXIT, SW_DF1    , SW_DF2 , SW_DF3 , SW_DF4 , SW_DF5 , SW_DF6 , SW_DF7 , XXXXXXX, SW_DF9 , SW_DF0 , XXXXXXX, XXXXXXX, EEP_RST, \
+  XXXXXXX, SW_TGEMACS, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, RESET  , \
   XXXXXXX, XXXXXXX   , SW_SAVE, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,          XXXXXXX, \
   XXXXXXX,             XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,          XXXXXXX, \
-  _______, _______, _______, SW_LYCLR,                                                      _______, _______, _______, _______)
+  _______, _______   , _______, SW_LYCLR,                                                      _______, _______, _______, _______)
 };
+
+void raw_hid_receive(uint8_t *data, uint8_t length) {
+    uprintf("I:SYN:START\n");
+    if (length < 1) {
+        return;
+    }
+    // char* str = (char*)data;
+    // if (strcmp(str, "K:SYN\n") == 0) {
+        // Sync all info
+        uprintf("I:SYN:EMACS:%d\n", user_config.emacs_mode);
+        uprintf("I:SYN:DL:%s\n", get_layer_name(user_config.default_layer));
+        uprintf("I:SYN:LL:%s\n", get_layer_name(user_config.last_default_layer));
+        uprintf("I:SYN:CAPSLOCK:%d\n", is_capslock_on());
+        uprintf("I:SYN:NUMLOCK:%d\n", is_numlock_on());
+        // } else {
+        // uprintf("I:SYN:%zu:%s\n", strlen(str), str);
+        // }
+    uprintf("I:SYN:END\n");
+}
 
 void eeconfig_init_user(void) {
     user_config.initialized = true;
@@ -103,10 +132,12 @@ void eeconfig_init_user(void) {
     user_config.last_default_layer = DEFAULT_LAYER_MAX;
     save_user_config();
     load_user_config();
+    uprintf("I:EE:INIT\n");
 }
 
 void keyboard_post_init_user(void) {
     load_user_config();
+    uprintf("I:INIT\n");
 }
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
@@ -117,6 +148,16 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     uint8_t ctl_layer;
     uint8_t ctl2_layer;
     switch (keycode) {
+    case KC_CAPS:
+        if (record->event.pressed) {
+            uprintf("I:ENV:CAPSLOCK:%d\n", !is_capslock_on());
+        }
+        return true;
+    case KC_NLCK:
+        if (record->event.pressed) {
+            uprintf("I:ENV:NUMLOCK:%d\n", !is_numlock_on());
+        }
+        return true;
     case SWF:
         if (record->event.pressed) {
             swf_pending++;
@@ -128,10 +169,12 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             case 1:
                 ctl_layer = sw_ctl_map[user_config.default_layer];
                 layer_on(ctl_layer);
+                uprintf("I:LAYER:CTL1:1\n");
                 break;
             case 2:
                 ctl2_layer = sw_ctl2_map[user_config.default_layer];
                 layer_on(ctl2_layer);
+                uprintf("I:LAYER:CTL2:1\n");
                 break;
             default:
                 break;
@@ -146,10 +189,12 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             case 0:
                 ctl_layer = sw_ctl_map[user_config.default_layer];
                 layer_off(ctl_layer);
+                uprintf("I:LAYER:CTL1:0\n");
                 break;
             case 1:
                 ctl2_layer = sw_ctl2_map[user_config.default_layer];
                 layer_off(ctl2_layer);
+                uprintf("I:LAYER:CTL2:0\n");
                 break;
             default:
                 break;
@@ -169,8 +214,10 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         uint8_t nump_layer = sw_nump_map[user_config.default_layer];
         if (record->event.pressed) {
             layer_on(nump_layer);
+            uprintf("I:LAYER:NUMP:1\n");
         } else {
             layer_off(nump_layer);
+            uprintf("I:LAYER:NUMP:0\n");
         }
         return false;
     case SW_LYCLR:
@@ -202,6 +249,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     case SW_TGEMACS:
         if (record->event.pressed) {
             user_config.emacs_mode = !user_config.emacs_mode;
+            uprintf("I:ENV:EMACS:%d\n", user_config.emacs_mode);
         }
         return false;
     case SW_SAVE:
@@ -209,7 +257,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             save_user_config();
         }
         return false;
-    case SW_DF0 ... SW_DF7:
+    case SW_DF0 ... SW_DF9:
         if (record->event.pressed) {
             push_default_layer(keycode - SW_DF0);
         }
@@ -224,6 +272,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             if (swf_pending == 2) {
                 // Two SWF keys pressed + SW_ENT -> ZZ layer
                 layer_on(_ZZ);
+                uprintf("I:LAYER:ZZ:1\n");
                 return false;
             }
             uint8_t nump_layer = sw_nump_map[user_config.default_layer];
@@ -231,11 +280,13 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 // If in Permanent Numpad mode, exit
                 sw_nump_toggle = 0;
                 layer_off(nump_layer);
+                uprintf("I:LAYER:NUMP:0\n");
                 return false;
             }
             if (IS_LAYER_ON(nump_layer)) {
                 // If in temporary Numpad mode, enter Permanent Numpad mode
                 sw_nump_toggle = 1;
+                uprintf("I:LAYER:NUMP:2\n");
                 return false;
             }
             if (DEFAULT_LAYER_IS(_IDLE)) {
@@ -249,6 +300,10 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             // Not sure if this is problematic.
             unregister_code(KC_ENT);
         }
+        return false;
+    case SW_EXIT:
+        layer_off(_ZZ);
+        uprintf("I:LAYER:ZZ:0\n");
         return false;
     case KC_RCTL:
         // Not sure if this is still needed.
@@ -266,6 +321,11 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         return swduo_process_right(keycode, record);
     case SWDUO_SPC:  // Duo other keycodes
         return swduo_process_others(keycode, record);
+    case SW_CMD0 ... SW_CMD9:
+        if (record->event.pressed) {
+            uprintf("I:CMD:%d\n", keycode-SW_CMD0);
+        }
+        return false;
     default:
         // Process all other keycodes normally
         return true;

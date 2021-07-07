@@ -7,6 +7,7 @@ enum my_keycodes {
     SWF                = SAFE_RANGE,  // Seiwa Fn key
     SW_FLIP,  // Flip the current default layer with the last used (if any) default layer
     SW_ENT,  // Seiwa Enter key
+    SW_EXIT,
     SW_NUMP,  // temporarily switch to the numpad layer of the base layer
     SW_LYCLR,  // clear all layers
     SW_ESC,  // Seiwa Esc key. Vim mode = KC_GESC, Emacs mode = KC_GRV
@@ -21,6 +22,19 @@ enum my_keycodes {
     SW_DF5,
     SW_DF6,
     SW_DF7,
+    SW_DF8,
+    SW_DF9,
+    // Arbitrary commands
+    SW_CMD0,
+    SW_CMD1,
+    SW_CMD2,
+    SW_CMD3,
+    SW_CMD4,
+    SW_CMD5,
+    SW_CMD6,
+    SW_CMD7,
+    SW_CMD8,
+    SW_CMD9,
     // Dvorak Modified
     SWDM_LOWER_BOUND,
     SWDM_LCTL,

@@ -2,6 +2,8 @@
 
 #include "../../config.h"
 
+#define USER_PRINT
+
 // #define BACKLIGHT_BREATHING
 /* #ifdef BACKLIGHT_LEVELS */
 /*   #undef BACKLIGHT_LEVELS */

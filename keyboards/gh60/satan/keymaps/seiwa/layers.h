@@ -6,6 +6,8 @@
 #define _DVRKMOD       3   // Dvorak Modified
 #define _DVRKMOD_MOD   4   // Dvorak Modified mod layer
 #define _DUO           5   // Duo
+#define _ARROW         6   // Arrow
+#define _GOD           9   // God
 #define _IDLE          10  // Idle layer. Must switch to other layers first
 #define _CTL_IDLE      11  // Controls for Idle layer. Only ZZ switch is available
 #define _CTL           12  // Controls 1
@@ -17,3 +19,5 @@ const extern uint8_t sw_default_layer_map[];
 const extern uint8_t sw_ctl_map[];
 const extern uint8_t sw_ctl2_map[];
 const extern uint8_t sw_nump_map[];
+
+char* get_layer_name(int number);
