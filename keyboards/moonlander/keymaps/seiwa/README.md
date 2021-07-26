@@ -2,7 +2,7 @@
 
 ## Layer index
 
-|Layer index|Access number from layer selector||
+|Index|Access number from layer selector|Name|
 |--|--|--|
 |0|1|QWERTY|
 |1|2|Dvorak|
