@@ -20,7 +20,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "quantum.h"
 
 enum custom_keycodes {
-    RF_DFU = QK_KB_0,
+    SW_ESC = QK_KB_0,
+    SW_FNESC,
+
+    RF_DFU,
     LNK_USB,
     LNK_RF,
     LNK_BLE1,

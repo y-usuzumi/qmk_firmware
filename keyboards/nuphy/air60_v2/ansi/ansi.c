@@ -20,6 +20,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "mcu_pwr.h"
 #include "version.h"
 
+#define MODS_SHIFT  (MOD_BIT(KC_LSFT)|MOD_BIT(KC_RSFT))
+
 char            socd_type[4][14]  = { "disabled", "cancellation", "exclusion", "nullification" };
 
 /* qmk pre-process record */
@@ -141,6 +143,8 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 
 /* qmk process record */
 bool process_record_kb(uint16_t keycode, keyrecord_t *record) {
+    static uint16_t SW_ESC_CODE;
+    static uint16_t SW_FNESC_CODE;
 
     if (!process_record_user(keycode, record)) {
         return false;
@@ -151,6 +155,30 @@ bool process_record_kb(uint16_t keycode, keyrecord_t *record) {
     }
 
     switch (keycode) {
+        case SW_ESC:
+            if (record->event.pressed) {
+                if (get_mods() & MODS_SHIFT) {
+                    SW_ESC_CODE = KC_GRV;
+                } else {
+                    SW_ESC_CODE = KC_ESC;
+                }
+                register_code(SW_ESC_CODE);
+            } else if (SW_ESC_CODE != 0x0) {
+                unregister_code(SW_ESC_CODE);
+            }
+            return false;
+        case SW_FNESC:
+            if (record->event.pressed) {
+                if (get_mods() & MODS_SHIFT) {
+                    SW_FNESC_CODE = KC_ESC;
+                } else {
+                    SW_FNESC_CODE = KC_GRV;
+                }
+                register_code(SW_FNESC_CODE);
+            } else if (SW_FNESC_CODE != 0x0) {
+                unregister_code(SW_FNESC_CODE);
+            }
+            return false;
         case RF_DFU:
             if (record->event.pressed) {
                 if (dev_info.link_mode != LINK_USB) { return false; }
